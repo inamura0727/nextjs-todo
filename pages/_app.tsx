@@ -18,16 +18,32 @@ const queryClient = new QueryClient({
 })
 
 export default function App({ Component, pageProps }: AppProps) {
+  // withCredentials:フロントエンドサイドとサーバーサイドでCookieのやりとりをする場合は、trueにしておく必要がある
+  axios.defaults.withCredentials = true
+  useEffect(() => {
+    const getCsrfToken = async () => {
+      const { data } = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/auth/csrf`
+      )
+      //axiosのデフォルト設定で、ヘッダーに’csrf-token’という名前をつけて、トークンを設定する
+      axios.defaults.headers.common['csrf-token'] = data.csrfToken
+    }
+    // getCsrfTokenの中でgetCsrToken関数を実行する
+    getCsrfToken()
+  }, [])
   return (
-    <MantineProvider
-      withGlobalStyles
-      withNormalizeCSS
-      theme={{
-        colorScheme: 'dark',
-        fontFamily: 'Verdana, sans-serif',
-      }}
-    >
-      <Component {...pageProps} />
-    </MantineProvider>
+    <QueryClientProvider client={queryClient}>
+      <MantineProvider
+        withGlobalStyles
+        withNormalizeCSS
+        theme={{
+          colorScheme: 'dark',
+          fontFamily: 'Verdana, sans-serif',
+        }}
+      >
+        <Component {...pageProps} />
+      </MantineProvider>
+      <ReactQueryDevtools />
+    </QueryClientProvider>
   )
 }
