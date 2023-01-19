@@ -3,8 +3,8 @@ import { useRouter } from 'next/router'
 import axios from 'axios'
 import { LogoutIcon } from '@heroicons/react/solid'
 import { Layout } from '../components/Layout'
-// import { UserInfo } from '../components/UserInfo'
 import { useQueryClient } from '@tanstack/react-query'
+import { UserInfo } from '../components/UserInfo'
 // import { TaskForm } from '../components/TaskForm'
 // import { TaskList } from '../components/TaskList'
 
@@ -14,7 +14,11 @@ import { useQueryClient } from '@tanstack/react-query'
 // }
 const Dashboard: NextPage = () => {
   const router = useRouter()
+  const QueryClient = useQueryClient()
   const logout = async () => {
+    /*RestAPIから取得したログインしているユーザー情報は、ブラウザの方にキャッシュされるから
+ログアウトの際に、キャッシュをリムーブする必要があるのでuseQueryClientを使用 */
+    QueryClient.removeQueries(['user'])
     await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/auth/logout`)
     router.push('/')
   }
@@ -24,6 +28,7 @@ const Dashboard: NextPage = () => {
         className="mb-6 h-6 w-6 cursor-pointer text-blue-500"
         onClick={logout}
       />
+      <UserInfo />
     </Layout>
   )
 }
