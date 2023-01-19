@@ -5,6 +5,8 @@ import { LogoutIcon } from '@heroicons/react/solid'
 import { Layout } from '../components/Layout'
 import { useQueryClient } from '@tanstack/react-query'
 import { UserInfo } from '../components/UserInfo'
+import { TaskForm } from '../components/TaskForm'
+import { TaskList } from '../components/TaskList'
 // import { TaskForm } from '../components/TaskForm'
 // import { TaskList } from '../components/TaskList'
 
@@ -19,6 +21,7 @@ const Dashboard: NextPage = () => {
     /*RestAPIから取得したログインしているユーザー情報は、ブラウザの方にキャッシュされるから
 ログアウトの際に、キャッシュをリムーブする必要があるのでuseQueryClientを使用 */
     QueryClient.removeQueries(['user'])
+    QueryClient.removeQueries(['tasks'])
     await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/auth/logout`)
     router.push('/')
   }
@@ -29,6 +32,8 @@ const Dashboard: NextPage = () => {
         onClick={logout}
       />
       <UserInfo />
+      <TaskForm />
+      <TaskList />
     </Layout>
   )
 }
